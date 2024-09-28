@@ -63,7 +63,6 @@ jobs:
     - name: Install Jupyter and CodeQL dependencies
       run: |
         pip install jupyter
-        pip install codeql
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
