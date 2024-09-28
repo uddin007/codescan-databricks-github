@@ -33,6 +33,9 @@ jobs:
         git add *.py
         git commit -m "Convert notebooks to Python scripts" || echo "No changes to commit"
         git push origin HEAD:main
+    - name: Notify success
+      run: |
+        echo "Successfully pushed changes!"
 
   codescan:
     runs-on: ubuntu-latest
