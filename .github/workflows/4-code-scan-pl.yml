@@ -33,8 +33,6 @@ jobs:
         git add *.py
         git commit -m "Convert notebooks to Python scripts" || echo "No changes to commit"
         git push origin HEAD:main
-    - name: Wait for 10 seconds
-      run: sleep 30
 
   codescan:
     runs-on: ubuntu-latest
@@ -74,8 +72,6 @@ jobs:
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
-    - name: Wait for 10 seconds
-      run: sleep 30
 
   delete-converted:
     runs-on: ubuntu-latest
