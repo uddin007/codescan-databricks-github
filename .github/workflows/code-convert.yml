@@ -1,4 +1,4 @@
-name: A-Convert Notebooks to Python Scripts
+name: 1-Convert Notebooks to Python Scripts
 
 on:
   push:
