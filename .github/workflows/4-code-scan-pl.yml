@@ -37,8 +37,8 @@ jobs:
       run: sleep 30
 
   codescan:
-    name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
+    needs: convert # codescan depends on convert
     permissions:
       # required for all workflows
       security-events: write
