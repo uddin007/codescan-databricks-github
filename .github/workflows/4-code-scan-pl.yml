@@ -45,8 +45,6 @@ jobs:
       # only required for workflows in private repositories
       actions: read
       contents: read
-    strategy:
-      fail-fast: false
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
