@@ -28,7 +28,7 @@
 # In[ ]:
 
 
-get_ipython().run_line_magic('pip', 'install git+https://github.com/amazon-science/chronos-forecasting.git')
+# get_ipython().run_line_magic('pip', 'install git+https://github.com/amazon-science/chronos-forecasting.git')
 
 
 # In[ ]:
