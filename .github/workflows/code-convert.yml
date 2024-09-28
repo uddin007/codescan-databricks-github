@@ -1,6 +1,12 @@
 name: A-Convert Notebooks to Python Scripts
 
-on: [push]
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '27 8 * * 4'
 
 permissions:
   contents: write  # Allow writing to the repository contents
