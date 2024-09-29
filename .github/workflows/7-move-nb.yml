@@ -19,6 +19,8 @@ jobs:
         env:
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL }}
+        run: |
+          databricks configure --token ${{ secrets.DATABRICKS_TOKEN }} --host ${{ secrets.DATABRICKS_URL }}
 
       - name: Determine Changed Notebooks
         id: changed-notebooks
