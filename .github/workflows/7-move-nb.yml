@@ -1,4 +1,4 @@
-name: Upload Notebooks to Databricks
+name: 7-Upload Notebooks to Databricks
 
 on:
   push:
