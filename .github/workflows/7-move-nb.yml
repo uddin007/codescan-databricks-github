@@ -11,14 +11,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Databricks CLI
+      - name: Install Databricks CLI (Alternative with apt-get)
         run: |
-          curl -fsSL https://install.databricks.com/cli/debian/databricks-cli_0.17.0_amd64.deb -o databricks-cli.deb
-          sudo dpkg -i databricks-cli.deb
+          sudo apt-get update
+          sudo apt-get install -y databricks-cli
 
       - name: Configure Databricks CLI
+        env:
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL }}
         run: |
-          databricks configure --token ${{ secrets.DATABRICKS_TOKEN }} --host ${{ secrets.DATABRICKS_URL }}
+          databricks configure --token ${{ secrets.DATABRICKS_TOKEN }}
 
       - name: Determine Changed Notebooks
         id: changed-notebooks
