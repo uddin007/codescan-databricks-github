@@ -35,6 +35,5 @@ jobs:
 
       - name: Move notebook to Databricks
         run: |
-          # Replace 'notebook.ipynb' and '/path/to/databricks/folder' accordingly
           databricks workspace import --overwrite --format SOURCE .Forecasting_Chronos.ipynb /Workspace/Shared/Forecasting_Chronos.ipynb
 
