@@ -33,6 +33,10 @@ jobs:
           $DATABRICKS_TOKEN
           EOF
 
+      - name: Fetch base branch
+        run: |
+          git fetch origin "$GITHUB_BASE_REF"
+
       - name: Check for notebook changes
         id: check_changes
         run: |
