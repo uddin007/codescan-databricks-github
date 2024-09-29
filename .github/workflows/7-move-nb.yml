@@ -20,7 +20,7 @@ jobs:
         run: |
           pip install databricks-cli
           databricks configure --token <<EOF
-          YOUR_DATABRICKS_INSTANCE_URL
+          ${{ secrets.DATABRICKS_URL }}
           ${{ secrets.DATABRICKS_TOKEN }}
           EOF
 
