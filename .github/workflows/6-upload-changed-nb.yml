@@ -18,9 +18,35 @@ jobs:
         with:
           python-version: '3.8'  # Use the appropriate Python version
 
+      # - name: Capture changed notebooks
+      #   id: capture_notebooks
+      #   run: |
+      #     # Check if there are any previous commits
+      #     if [ "$(git rev-list --count HEAD)" -lt 2 ]; then
+      #       echo "No previous commit found. Exiting."
+      #       echo "changed_notebooks=none" >> $GITHUB_ENV
+      #       exit 0
+      #     fi
+
+      #     # Get list of changed Jupyter notebooks in the main branch
+      #     changed_notebooks=$(git diff --name-only HEAD^ HEAD | grep '\.ipynb$')
+      #     echo "Changed Notebooks: $changed_notebooks"
+
+      #     # Check if there are any changed notebooks
+      #     if [ -z "$changed_notebooks" ]; then
+      #       echo "No notebooks changed."
+      #       echo "changed_notebooks=none" >> $GITHUB_ENV
+      #     else
+      #       echo "$changed_notebooks" >> changed_notebooks.txt
+      #       echo "changed_notebooks=changed" >> $GITHUB_ENV
+      #     fi
+
       - name: Capture changed notebooks
         id: capture_notebooks
         run: |
+          # Fetch the latest changes from the remote main branch
+          git fetch origin main
+
           # Check if there are any previous commits
           if [ "$(git rev-list --count HEAD)" -lt 2 ]; then
             echo "No previous commit found. Exiting."
@@ -28,8 +54,8 @@ jobs:
             exit 0
           fi
 
-          # Get list of changed Jupyter notebooks in the main branch
-          changed_notebooks=$(git diff --name-only HEAD^ HEAD | grep '\.ipynb$')
+          # Get list of changed Jupyter notebooks compared to the main branch
+          changed_notebooks=$(git diff --name-only origin/main...HEAD | grep '\.ipynb$')
           echo "Changed Notebooks: $changed_notebooks"
 
           # Check if there are any changed notebooks
@@ -40,6 +66,7 @@ jobs:
             echo "$changed_notebooks" >> changed_notebooks.txt
             echo "changed_notebooks=changed" >> $GITHUB_ENV
           fi
+
 
       - name: Upload changed notebooks to Databricks
         if: env.changed_notebooks == 'changed'
