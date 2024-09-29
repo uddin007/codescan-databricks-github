@@ -36,8 +36,8 @@ jobs:
       - name: Check for notebook changes
         id: check_changes
         run: |
-          base_branch="${{ github.event.pull_request.base.ref }}"
-          notebooks=$(git diff --name-only "$base_branch"...HEAD | grep '\.ipynb')
+          # Use the GITHUB_BASE_REF to compare with the base branch
+          notebooks=$(git diff --name-only "$GITHUB_BASE_REF"...HEAD | grep '\.ipynb')
           if [ -z "$notebooks" ]; then
             echo "no_notebooks" >> $GITHUB_ENV
           else
