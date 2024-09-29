@@ -1,0 +1,57 @@
+name: 5-Export DBX Notebook
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  move_notebook:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'  # Specify your Python version
+
+      - name: Install Databricks CLI
+        run: |
+          pip install databricks-cli
+          
+      - name: Configure Databricks CLI
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          databricks configure --token <<EOF
+          $DATABRICKS_HOST
+          $DATABRICKS_TOKEN
+          EOF
+
+      - name: Fetch base branch
+        run: |
+          git fetch origin "$GITHUB_BASE_REF"
+
+      - name: Check for notebook changes
+        id: check_changes
+        run: |
+          # Use the GITHUB_BASE_REF to compare with the base branch
+          notebooks=$(git diff --name-only "$GITHUB_BASE_REF"...HEAD | grep '\.ipynb')
+          if [ -z "$notebooks" ]; then
+            echo "no_notebooks" >> $GITHUB_ENV
+          else
+            echo "$notebooks" >> $GITHUB_ENV
+          fi
+
+      - name: Move notebooks to Databricks
+        if: env.no_notebooks != 'no_notebooks'
+        run: |
+          for notebook in ${{ env.notebooks }}; do
+            echo "Importing $notebook..."
+            databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$(basename "$notebook")"
+          done

@@ -1,0 +1,31 @@
+name: 3-Delete Python File 
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: write  # Allow writing to the repository contents
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+    - name: Install Jupyter
+      run: |
+        pip install jupyter
+        pip install nbconvert
+    - name: Commit and Push Converted Files
+      run: |
+        git config --local user.name "github-actions[bot]"
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git rm *.py || echo "File not found, nothing to delete"
+        git commit -m "Convert notebooks to Python scripts and delete specified file" || echo "No changes to commit"
+        git push origin HEAD:main
