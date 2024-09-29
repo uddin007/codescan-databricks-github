@@ -36,7 +36,6 @@ jobs:
       - name: Check for notebook changes
         id: check_changes
         run: |
-          # Compare current branch against the base branch
           base_branch="${{ github.event.pull_request.base.ref }}"
           notebooks=$(git diff --name-only "$base_branch"...HEAD | grep '\.ipynb')
           if [ -z "$notebooks" ]; then
