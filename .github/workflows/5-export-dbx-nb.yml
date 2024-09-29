@@ -36,7 +36,7 @@ jobs:
       - name: Check for notebook changes
         id: check_changes
         run: |
-          notebooks=$(git diff --name-only HEAD^ HEAD | grep '\.ipynb')
+          notebooks=$(git diff --name-only HEAD HEAD~1 | grep '\.ipynb')
           if [ -z "$notebooks" ]; then
             echo "no_notebooks" >> $GITHUB_ENV
           else
