@@ -35,5 +35,5 @@ jobs:
 
       - name: Move notebook to Databricks
         run: |
-          databricks workspace import --overwrite --format SOURCE --language PYTHON .Forecasting_Chronos.ipynb /Workspace/Shared/Forecasting_Chronos.ipynb
+          databricks workspace import --overwrite --format SOURCE --language PYTHON Forecasting_Chronos.ipynb /Workspace/Shared/Forecasting_Chronos.ipynb
 
