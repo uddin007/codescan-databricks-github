@@ -26,7 +26,13 @@ jobs:
       - name: Upload changed notebooks
         run: |
           # Get a list of changed notebooks
-          changed_notebooks=$(git diff --name-only HEAD^ HEAD | grep '\.ipynb$')
+          if [ "$(git rev-parse --quiet --verify HEAD^)" ]; then
+            # Use HEAD^ if it exists
+            changed_notebooks=$(git diff --name-only HEAD^ HEAD | grep '\.ipynb$')
+          else
+            # If HEAD^ doesn't exist, compare with an empty tree
+            changed_notebooks=$(git diff --name-only --diff-filter=AM 0000000000000000000000000000000000000000 HEAD | grep '\.ipynb$')
+          fi
           
           if [ -z "$changed_notebooks" ]; then
             echo "No notebooks changed."
