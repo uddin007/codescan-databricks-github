@@ -20,8 +20,8 @@ jobs:
         run: |
           pip install databricks-cli
           databricks configure --token <<EOF
-          ${{ secrets.DATABRICKS_URL }}
-          ${{ secrets.DATABRICKS_TOKEN }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          DATABRICKS_URL: ${{ secrets.DATABRICKS_URL }}  
           EOF
 
       - name: Upload changed notebooks
