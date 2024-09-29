@@ -20,8 +20,11 @@ jobs:
           pip install requests==2.28.1 urllib3>=1.21.1
 
       - name: Configure Databricks CLI
+        env:
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL }}
         run: |
-          databricks configure --token ${{ secrets.DATABRICKS_TOKEN }} --host ${{ secrets.DATABRICKS_HOST }}
+          databricks configure --token "$DATABRICKS_TOKEN" --host "$DATABRICKS_HOST"
 
       - name: Determine Changed Notebooks
         id: changed-notebooks
