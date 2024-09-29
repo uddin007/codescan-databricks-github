@@ -11,10 +11,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Databricks CLI (Alternative with apt-get)
+      - name: Install Databricks CLI (Using curl)  # Uncomment if needed
         run: |
-          sudo apt-get update
-          sudo apt-get install -y databricks-cli
+           curl -fsSL https://downloads.databricks.com/cli/linux/6.9.0/databricks.deb -o databricks.deb
+           sudo apt-get install -y gnupg
+           sudo apt-key add databricks.gpg
+           sudo apt-get update
+           sudo apt-get install -y databricks.deb
 
       - name: Configure Databricks CLI
         env:
