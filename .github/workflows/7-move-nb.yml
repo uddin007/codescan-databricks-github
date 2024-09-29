@@ -21,10 +21,13 @@ jobs:
 
       - name: Configure Databricks CLI
         env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL }}
         run: |
-          databricks configure --token "$DATABRICKS_TOKEN" --host "$DATABRICKS_HOST"
+          databricks configure --token <<EOF
+          $DATABRICKS_HOST
+          $DATABRICKS_TOKEN
+          EOF
 
       - name: Determine Changed Notebooks
         id: changed-notebooks
