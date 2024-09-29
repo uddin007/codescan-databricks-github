@@ -33,7 +33,20 @@ jobs:
           $DATABRICKS_TOKEN
           EOF
 
-      - name: Move notebook to Databricks
+      - name: Check for notebook changes
+        id: check_changes
         run: |
-          databricks workspace import --overwrite --format SOURCE --language PYTHON Forecasting_Chronos.ipynb /Workspace/Shared/test-dbx-devops/Forecasting_Chronos.ipynb
+          notebooks=$(git diff --name-only HEAD^ HEAD | grep '\.ipynb')
+          if [ -z "$notebooks" ]; then
+            echo "no_notebooks" >> $GITHUB_ENV
+          else
+            echo "$notebooks" >> $GITHUB_ENV
+          fi
 
+      - name: Move notebooks to Databricks
+        if: env.no_notebooks != 'no_notebooks'
+        run: |
+          for notebook in ${{ env.notebooks }}; do
+            echo "Importing $notebook..."
+            databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$(basename "$notebook")"
+          done
