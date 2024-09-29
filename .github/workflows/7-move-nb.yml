@@ -18,9 +18,9 @@ jobs:
       - name: Configure Databricks CLI
         env:
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_URL }}
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
         run: |
-          databricks configure --token ${{ secrets.DATABRICKS_TOKEN }} --host ${{ secrets.DATABRICKS_URL }}
+          databricks configure --token ${{ secrets.DATABRICKS_TOKEN }} --host ${{ secrets.DATABRICKS_HOST }}
 
       - name: Determine Changed Notebooks
         id: changed-notebooks
@@ -31,7 +31,7 @@ jobs:
         if: steps.changed-notebooks.outputs.changed_notebooks != ''
         run: |
           while IFS= read -r notebook_path; do
-            databricks workspace import --path $notebook_path --destination /Workspace/Shared/test-dbx-devops
+            databricks workspace import --path $notebook_path --destination /Workspace/Shared/test-dbx-devops/
           done < changed_notebooks.txt
 
       - name: Cleanup
