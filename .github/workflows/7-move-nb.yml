@@ -1,44 +1,36 @@
-name: 7-Upload Notebooks to Databricks
+name: 7-Move Changed Notebooks to Databricks
 
 on:
   push:
-    paths:
-      - '**/*.ipynb'  # Trigger on changes to any Jupyter notebooks
-  pull_request:
-    paths:
-      - '**/*.ipynb'  # Trigger on changes to Jupyter notebooks in PRs
+    branches: [main]
 
 jobs:
-  upload_notebooks:
+  move-notebooks:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Set up Databricks CLI
+      - name: Install Databricks CLI
         run: |
-          pip install databricks-cli
-          echo "[DEFAULT]" > ~/.databrickscfg
-          echo "host = ${{ secrets.DATABRICKS_HOST }}" >> ~/.databrickscfg
-          echo "token = ${{ secrets.DATABRICKS_TOKEN }}" >> ~/.databrickscfg
+          curl -fsSL https://install.databricks.com/cli/debian/databricks-cli_0.17.0_amd64.deb -o databricks-cli.deb
+          sudo dpkg -i databricks-cli.deb
 
-      - name: Upload changed notebooks
+      - name: Configure Databricks CLI
         run: |
-          # Get a list of changed notebooks
-          if [ "$(git rev-parse --quiet --verify HEAD^)" ]; then
-            # Use HEAD^ if it exists
-            changed_notebooks=$(git diff --name-only HEAD^ HEAD | grep '\.ipynb$')
-          else
-            # If HEAD^ doesn't exist, use `git diff` with `--diff-filter` to find added files
-            changed_notebooks=$(git diff --name-only --diff-filter=A HEAD | grep '\.ipynb$')
-          fi
-          
-          if [ -z "$changed_notebooks" ]; then
-            echo "No notebooks changed."
-          else
-            for notebook in $changed_notebooks; do
-              echo "Uploading $notebook to Databricks..."
-              databricks workspace import "$notebook" "/Workspace/Shared/test-dbx-devops/$notebook" --overwrite
-            done
-          fi
+          databricks configure --token ${{ secrets.DATABRICKS_TOKEN }} --host ${{ secrets.DATABRICKS_URL }}
+
+      - name: Determine Changed Notebooks
+        id: changed-notebooks
+        run: |
+          git diff --name-only --diff-filter=AD ${GITHUB_REF} origin/main | grep '\.ipynb' > changed_notebooks.txt
+
+      - name: Move Changed Notebooks
+        if: steps.changed-notebooks.outputs.changed_notebooks != ''
+        run: |
+          while IFS= read -r notebook_path; do
+            databricks workspace import --path $notebook_path --destination /Workspace/Shared/test-dbx-devops
+          done < changed_notebooks.txt
+
+      - name: Cleanup
+        run: rm changed_notebooks.txt
