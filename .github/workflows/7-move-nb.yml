@@ -1,0 +1,39 @@
+name: Upload Notebooks to Databricks
+
+on:
+  push:
+    paths:
+      - '**/*.ipynb'  # Trigger on changes to any Jupyter notebooks
+  pull_request:
+    paths:
+      - '**/*.ipynb'  # Trigger on changes to Jupyter notebooks in PRs
+
+jobs:
+  upload_notebooks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Databricks CLI
+        run: |
+          pip install databricks-cli
+          databricks configure --token <<EOF
+          YOUR_DATABRICKS_INSTANCE_URL
+          ${{ secrets.DATABRICKS_TOKEN }}
+          EOF
+
+      - name: Upload changed notebooks
+        run: |
+          # Get a list of changed notebooks
+          changed_notebooks=$(git diff --name-only HEAD^ HEAD | grep '\.ipynb$')
+          
+          if [ -z "$changed_notebooks" ]; then
+            echo "No notebooks changed."
+          else
+            for notebook in $changed_notebooks; do
+              echo "Uploading $notebook to Databricks..."
+              databricks workspace import "$notebook" "/Workspace/Shared/test-dbx-devops/$notebook" --overwrite
+            done
+          fi
