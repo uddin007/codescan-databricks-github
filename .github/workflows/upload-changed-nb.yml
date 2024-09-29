@@ -21,6 +21,13 @@ jobs:
       - name: Capture changed notebooks
         id: capture_notebooks
         run: |
+          # Check if there are any previous commits
+          if [ "$(git rev-list --count HEAD)" -lt 2 ]; then
+            echo "No previous commit found. Exiting."
+            echo "changed_notebooks=none" >> $GITHUB_ENV
+            exit 0
+          fi
+
           # Get list of changed Jupyter notebooks in the main branch
           changed_notebooks=$(git diff --name-only HEAD^ HEAD | grep '\.ipynb$')
           echo "Changed Notebooks: $changed_notebooks"
@@ -44,7 +51,7 @@ jobs:
           while IFS= read -r notebook; do
             echo "Uploading $notebook to Databricks..."
             notebook_path=$(basename "$notebook")
-            databricks_path="/Workspace/Shared/test-dbx-devops/$notebook_path"  # Adjust this path as needed
+            databricks_path="/Workspace/Notebooks/$notebook_path"  # Adjust this path as needed
 
             # Use curl to upload the notebook
             curl -X POST "$DATABRICKS_URL/api/2.0/workspace/import" \
