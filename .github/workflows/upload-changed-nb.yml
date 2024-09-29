@@ -1,0 +1,59 @@
+name: Upload Changed Notebooks to Databricks
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  upload-notebooks:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'  # Use the appropriate Python version
+
+      - name: Capture changed notebooks
+        id: capture_notebooks
+        run: |
+          # Get list of changed Jupyter notebooks in the main branch
+          changed_notebooks=$(git diff --name-only HEAD^ HEAD | grep '\.ipynb$')
+          echo "Changed Notebooks: $changed_notebooks"
+
+          # Check if there are any changed notebooks
+          if [ -z "$changed_notebooks" ]; then
+            echo "No notebooks changed."
+            echo "changed_notebooks=none" >> $GITHUB_ENV
+          else
+            echo "$changed_notebooks" >> changed_notebooks.txt
+            echo "changed_notebooks=changed" >> $GITHUB_ENV
+          fi
+
+      - name: Upload changed notebooks to Databricks
+        if: env.changed_notebooks == 'changed'
+        env:
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          DATABRICKS_URL: ${{ secrets.DATABRICKS_URL }}  # e.g., https://<your-databricks-instance>
+        run: |
+          # Loop through each changed notebook and upload it
+          while IFS= read -r notebook; do
+            echo "Uploading $notebook to Databricks..."
+            notebook_path=$(basename "$notebook")
+            databricks_path="/Workspace/Shared/test-dbx-devops/$notebook_path"  # Adjust this path as needed
+
+            # Use curl to upload the notebook
+            curl -X POST "$DATABRICKS_URL/api/2.0/workspace/import" \
+              -H "Authorization: Bearer $DATABRICKS_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{
+                "path": "'"$databricks_path"'",
+                "format": "SOURCE",
+                "language": "PYTHON",
+                "content": "'"$(base64 "$notebook")"'"
+              }'
+          done < changed_notebooks.txt
