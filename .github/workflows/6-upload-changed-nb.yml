@@ -1,4 +1,4 @@
-name: Upload Changed Notebooks to Databricks
+name: 6-Upload Changed Notebooks to Databricks
 
 on:
   push:
@@ -51,7 +51,7 @@ jobs:
           while IFS= read -r notebook; do
             echo "Uploading $notebook to Databricks..."
             notebook_path=$(basename "$notebook")
-            databricks_path="/Workspace/Notebooks/$notebook_path"  # Adjust this path as needed
+            databricks_path="/Workspace/Shared/test-dbx-devops/$notebook_path"  # Adjust this path as needed
 
             # Use curl to upload the notebook
             curl -X POST "$DATABRICKS_URL/api/2.0/workspace/import" \
