@@ -19,10 +19,9 @@ jobs:
       - name: Set up Databricks CLI
         run: |
           pip install databricks-cli
-          databricks configure --token <<EOF
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-          DATABRICKS_URL: ${{ secrets.DATABRICKS_URL }}  
-          EOF
+          echo "[DEFAULT]" > ~/.databrickscfg
+          echo "host = ${{ secrets.DATABRICKS_HOST }}" >> ~/.databrickscfg
+          echo "token = ${{ secrets.DATABRICKS_TOKEN }}" >> ~/.databrickscfg
 
       - name: Upload changed notebooks
         run: |
