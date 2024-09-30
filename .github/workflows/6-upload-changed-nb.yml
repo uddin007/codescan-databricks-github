@@ -12,8 +12,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0  # Fetch all history for all branches
 
       - name: Set up Python
         uses: actions/setup-python@v2
