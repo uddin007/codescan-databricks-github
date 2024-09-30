@@ -72,6 +72,7 @@ jobs:
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
       with:
+        paths: notebooks # Specify the folder to analyze
         category: "/language:${{matrix.language}}"
 
   delete-converted:
