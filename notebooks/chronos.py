@@ -4,7 +4,7 @@
 # ### **Chronos Model:Learning the Language of Time Series**
 
 # ### Model Overview:
-# Chronos is a family of pretrained time series forecasting models based on language model architectures. A time series is transformed into a sequence of tokens via scaling and quantization, and a language model is trained on these tokens using the cross-entropy loss. Once trained, probabilistic forecasts are obtained by sampling multiple future trajectories given the historical context. Chronos models have been trained on a large corpus of publicly available time series data, as well as synthetic data generated using Gaussian processes.
+# Chronos is a family of pretrained time series forecasting models based on language model architecture. A time series is transformed into a sequence of tokens via scaling and quantization, and a language model is trained on these tokens using the cross-entropy loss. Once trained, probabilistic forecasts are obtained by sampling multiple future trajectories given the historical context. Chronos models have been trained on a large corpus of publicly available time series data, as well as synthetic data generated using Gaussian processes.
 # [Original paper publised on 2-May, 2024](https://arxiv.org/abs/2403.07815)
 
 # <img src="https://github.com/amazon-science/chronos-forecasting/blob/main/figures/main-figure.png?raw=true" style="margin-left: 10px"  width="1100px;">
