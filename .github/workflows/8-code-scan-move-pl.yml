@@ -95,8 +95,8 @@ jobs:
         python-version: '3.8'
     - name: Commit and Push Delete Converted Files
       run: |
-        git config --local user.name "github-actions[bot]"
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git rm notebooks/*.py || echo "File not found, nothing to delete"
         git commit -m "Convert notebooks to Python scripts and delete specified file" || echo "No changes to commit"
         git push origin HEAD:main
