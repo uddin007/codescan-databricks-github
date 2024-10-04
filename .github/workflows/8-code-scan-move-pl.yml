@@ -3,12 +3,8 @@ name: 8-code scan and move pipeline
 on:
   push:
     branches: [ "main" ]
-    paths:
-      - 'notebooks/**'
   pull_request:
     branches: [ "main" ]
-    paths:
-      - 'notebooks/**'
 
 jobs:
   convert:
