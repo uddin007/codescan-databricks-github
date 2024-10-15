@@ -120,6 +120,7 @@ jobs:
     - name: Move notebooks to Databricks
       run: |
         for notebook in notebooks/*.ipynb; do
-          databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$(basename "$notebook")"
+          # databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$(basename "$notebook")"
+          databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$(basename "$notebook" .py).dbc"
         done
         
