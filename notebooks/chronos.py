@@ -9,7 +9,7 @@
 
 # <img src="https://github.com/amazon-science/chronos-forecasting/blob/main/figures/main-figure.png?raw=true" style="margin-left: 10px"  width="1100px;">
 
-# Figure: High-level depictions of Chronos Models. (Left) The input time series is scaled and quantized to obtain a sequence of tokens. (Center) The tokens are fed into a language model which may either be an encoder-decoder or a decoder-only model. The model is trained using the cross-entropy loss. (Right) During inference, we autoregressively sample tokens from the model and map them back to numerical values. Multiple trajectories are sampled to obtain a predictive distribution.
+# Figure: High level depictions of Chronos Models. (Left) The input time series is scaled and quantized to obtain a sequence of tokens. (Center) The tokens are fed into a language model which may either be an encoder-decoder or a decoder-only model. The model is trained using the cross-entropy loss. (Right) During inference, we autoregressively sample tokens from the model and map them back to numerical values. Multiple trajectories are sampled to obtain a predictive distribution.
 
 # ### In summary:
 #  Chronos tokenizes time series into discrete bins through simple scaling and quantization of real values. In that way, we can train off-the-shelf language models on this “language of time series,” with no changes to the model architecture (above Figure). Remarkably, this straightforward approach proves to be effective and efficient, underscoring the potential for language model architectures to address a broad range of time series problems with minimal modifications.
