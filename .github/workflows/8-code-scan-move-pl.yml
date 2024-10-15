@@ -10,7 +10,7 @@ jobs:
   convert:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Allow writing to the repository contents
+      contents: write  
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
