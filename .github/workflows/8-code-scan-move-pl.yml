@@ -123,4 +123,7 @@ jobs:
         for notebook in notebooks/*.ipynb; do
           databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$(basename "$notebook")"
         done
+    - name: Move folder to Databricks
+      run: |
+        databricks workspace import --overwrite --format SOURCE --language PYTHON --path "/notebooks" "/Workspace/Shared/test-dbx-devops-notebooks"
         
