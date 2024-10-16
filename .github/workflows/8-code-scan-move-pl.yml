@@ -126,6 +126,6 @@ jobs:
     - name: Move folder to Databricks
       run: |
         # databricks workspace import --overwrite --format SOURCE --language PYTHON --recursive "notebooks/" "/Workspace/Shared/test-dbx-devops-notebooks"
-        databricks workspace import --overwrite --format SOURCE --language PYTHON "notebooks/" "/Workspace/Shared/test-dbx-devops-notebooks"
+        databricks workspace import --overwrite --format SOURCE --language PYTHON "notebooks" "/Workspace/Shared/test-dbx-devops-notebooks"
 
         
