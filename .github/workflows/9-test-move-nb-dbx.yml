@@ -29,18 +29,10 @@ jobs:
         EOF
     - name: Move notebooks to Databricks Workspace
       run: |
-        # for notebook in notebooks/*.ipynb; do
-        #   databricks workspace import --overwrite --format JUPYTER --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$(basename "$notebook")"
-        # done
-
         for notebook in ./notebooks/*.ipynb; do
           filename=$(basename "$notebook" .ipynb)
           databricks workspace import --overwrite --format JUPYTER --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
         done
-
-    # - name: Move converted notebooks to Databricks
-    #   run: |
-    #     databricks workspace import-dir --overwrite --path . /Workspace/Shared/test-dbx-devops/
 
 
 
