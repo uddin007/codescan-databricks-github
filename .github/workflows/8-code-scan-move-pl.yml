@@ -98,7 +98,7 @@ jobs:
         $DATABRICKS_HOST
         $DATABRICKS_TOKEN
         EOF
-    - name: Move notebooks to Databricks
+    - name: Move notebooks to Databricks Workspace
       run: |
         for notebook in ./notebooks/*.ipynb; do
           filename=$(basename "$notebook" .ipynb)
