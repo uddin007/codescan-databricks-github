@@ -77,29 +77,9 @@ jobs:
         checkout_path: notebooks # Specify the folder to analyze
         category: "/language:${{matrix.language}}"
 
-  # delete-converted:
-  #   runs-on: ubuntu-latest
-  #   needs: codescan # delete-converted depends on codescan
-  #   permissions:
-  #     contents: write  # Allow writing to the repository contents
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - name: Set up Python
-  #     uses: actions/setup-python@v2
-  #     with:
-  #       python-version: '3.8'
-  #   - name: Commit and Push Delete Converted Files
-  #     run: |
-  #       git config --global user.name "github-actions[bot]"
-  #       git config --global user.email "github-actions[bot]@users.noreply.github.com"
-  #       git rm notebooks/*.py || echo "File not found, nothing to delete"
-  #       git commit -m "Convert notebooks to Python scripts and delete specified file" || echo "No changes to commit"
-  #       git push origin HEAD:main
-
   move-notebooks-databricks:
     runs-on: ubuntu-latest
-    needs: codescan # delete-converted depends on codescan
-    # needs: delete-converted # move-notebooks-databricks depends on delete-converted
+    needs: codescan # move-notebooks-databricks depends on codescan
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -108,7 +88,7 @@ jobs:
         python-version: '3.8'
     - name: Install Databricks CLI
       run: |
-        pip install databricks-cli
+        pip install databricks-cli==0.18
     - name: Configure Databricks CLI
       env:
         DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
@@ -120,25 +100,7 @@ jobs:
         EOF
     - name: Move notebooks to Databricks
       run: |
-        for notebook in notebooks/*.py; do
-          databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$(basename "$notebook")"
+        for notebook in ./notebooks/*.ipynb; do
+          filename=$(basename "$notebook" .ipynb)
+          databricks workspace import --overwrite --format JUPYTER --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
         done
-    - name: Move converted notebooks to Databricks
-      run: |
-        for notebook in notebooks/*.ipynb; do
-            databricks workspace import "$notebook" "/Workspace/Shared/test-dbx-devops-convert/$(basename "$notebook" .ipynb).dbc" --overwrite --language python
-        done
-
-    # - name: Move folder to Databricks
-    #   run: |
-        # databricks workspace import --overwrite --format SOURCE --language PYTHON --recursive "notebooks/" "/Workspace/Shared/test-dbx-devops-notebooks"
-        # databricks workspace import --overwrite --format SOURCE --language PYTHON "/notebooks" "/Workspace/Shared/test-dbx-devops-notebooks"
-        # for file in ./notebooks/*.ipynb; do
-        #   databricks workspace import "$file" "/Workspace/Shared/test-dbx-devops/$(basename "$file" .ipynb)" --overwrite --language python
-        # done
-        # - name: Move folder to Databricks
-
-
-
-
-        
