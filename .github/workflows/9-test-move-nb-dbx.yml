@@ -34,7 +34,7 @@ jobs:
         done
     - name: Move converted notebooks to Databricks
       run: |
-        databricks workspace upload --path ./notebooks --destination /Workspace/Shared/test-dbx-devops/
+        databricks workspace import-dir --path ./notebooks --destination /Workspace/Shared/test-dbx-devops/
 
 
 
