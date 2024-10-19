@@ -1,0 +1,42 @@
+name: 8-code scan and move pipeline 
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  move-notebooks-databricks:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+    - name: Install Databricks CLI
+      run: |
+        pip install databricks-cli
+    - name: Configure Databricks CLI
+      env:
+        DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+        DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      run: |
+        databricks configure --token <<EOF
+        $DATABRICKS_HOST
+        $DATABRICKS_TOKEN
+        EOF
+    - name: Move notebooks to Databricks
+      run: |
+        for notebook in notebooks/*.py; do
+          databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$(basename "$notebook")"
+        done
+    - name: Move converted notebooks to Databricks
+      run: |
+        databricks workspace import-dir --path ./notebooks --destination /Workspace/Shared/test-dbx-devops-convert/
+
+
+
+
+        
