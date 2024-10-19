@@ -17,7 +17,7 @@ jobs:
         python-version: '3.8'
     - name: Install Databricks CLI
       run: |
-        pip install databricks-cli==0.18.0
+        pip install --upgrade databricks-cli
     - name: Configure Databricks CLI
       env:
         DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
@@ -34,7 +34,7 @@ jobs:
         done
     - name: Move converted notebooks to Databricks
       run: |
-        databricks workspace import-dir --path ./notebooks --destination /Workspace/Shared/test-dbx-devops/
+        databricks workspace import --overwrite --format SOURCE --path ./notebooks --destination /Workspace/Shared/test-dbx-devops/
 
 
 
