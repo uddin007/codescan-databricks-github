@@ -127,7 +127,11 @@ jobs:
       run: |
         # databricks workspace import --overwrite --format SOURCE --language PYTHON --recursive "notebooks/" "/Workspace/Shared/test-dbx-devops-notebooks"
         # databricks workspace import --overwrite --format SOURCE --language PYTHON "/notebooks" "/Workspace/Shared/test-dbx-devops-notebooks"
-        databricks workspace import ./notebooks /Workspace/Shared/test-dbx-devops-notebooks --overwrite --language python
+        for file in ./notebooks/*.ipynb; do
+          databricks workspace import "$file" "/Workspace/Shared/test-dbx-devops-notebooks/$(basename "$file" .ipynb)" --overwrite --language python
+        done
+
+
 
 
 
