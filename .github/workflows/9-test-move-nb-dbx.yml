@@ -34,7 +34,8 @@ jobs:
         done
     - name: Move converted notebooks to Databricks
       run: |
-        databricks workspace import --overwrite --format SOURCE --language PYTHON ./notebooks /Workspace/Shared/test-dbx-devops/
+        databricks workspace import-dir --overwrite --path . /Workspace/Shared/test-dbx-devops/
+
 
 
 
