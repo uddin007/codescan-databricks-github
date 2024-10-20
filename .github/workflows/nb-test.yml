@@ -1,0 +1,31 @@
+name: 10-Run Databricks Notebook Tests
+
+on:
+  push:
+    paths:
+      - 'notebooks/**'  # Monitor changes in the notebooks folder
+  pull_request:
+    paths:
+      - 'notebooks/**'  # Monitor pull requests that affect notebooks
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt  # Adjust this if you have a different way to manage dependencies
+
+      - name: Run tests
+        run: |
+          # Command to run your unit tests
+          # Adjust this to the command you use to run your tests, for example:
+          pytest tests/  # Assuming your tests are in a 'tests' folder
