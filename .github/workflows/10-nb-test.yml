@@ -25,9 +25,11 @@ jobs:
         run: |
           pip install pytest databricks-cli
 
-      - name: Run unit tests
+      - name: Run unit tests on notebooks
         run: |
-          pytest tests/  # Adjust the path to your test files
+          for notebook in notebooks/*.ipynb; do
+            jupyter nbconvert --to notebook --execute --inplace $notebook
+          done
 
       - name: Configure Databricks CLI
         env:
