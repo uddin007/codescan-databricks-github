@@ -1,4 +1,4 @@
-name: 10-Run Databricks Unit Tests
+name: Run Databricks Unit Tests
 
 on:
   push:
@@ -23,12 +23,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pytest databricks-cli
+          pip install pytest databricks-cli==0.18 nbconvert jupyter 
 
       - name: Run unit tests on notebooks
         run: |
           for notebook in notebooks/*.ipynb; do
-            jupyter nbconvert --to notebook --execute --inplace $notebook
+            jupyter nbconvert --to notebook --execute --inplace "$notebook"
           done
 
       - name: Configure Databricks CLI
@@ -46,16 +46,14 @@ jobs:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
         run: |
-          # Replace `your_notebook_path` with the path to your notebook(s)
           for notebook in notebooks/*.ipynb; do
-            databricks workspace import --overwrite --format JUPYTER $notebook /Workspace/Tests/$(basename $notebook)
+            databricks workspace import --overwrite --format SOURCE "$notebook" /Workspace/Tests/$(basename "$notebook")
           done
 
       - name: Run notebooks on Databricks
         run: |
-          # Assuming you want to run the last uploaded notebook
-          notebook_path=$(basename notebooks/*.ipynb)
-          response=$(databricks jobs.create --json "{\"name\":\"Test Notebook\",\"notebook_task\":{\"notebook_path\":\"/Workspace/Tests/$notebook_path\"}}")
-          job_id=$(echo $response | jq -r .job_id)
-          databricks jobs.run-now --job-id $job_id
-
+          for notebook in notebooks/*.ipynb; do
+            job_id=$(databricks jobs.create --json "{\"name\": \"Test Notebook - $(basename "$notebook")\", \"notebook_task\": {\"notebook_path\": \"/Workspace/Tests/$(basename "$notebook")\"}}")
+            job_run_id=$(databricks jobs.run-now --job-id "$job_id" | jq -r .run_id)
+            echo "Running notebook: $(basename "$notebook") with job run ID: $job_run_id"
+          done
