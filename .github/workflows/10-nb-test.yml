@@ -1,31 +1,59 @@
-name: 10-Run Databricks Notebook Tests
+name: 10-Run Databricks Unit Tests
 
 on:
   push:
-    paths:
-      - 'notebooks/**'  # Monitor changes in the notebooks folder
+    branches:
+      - main
   pull_request:
-    paths:
-      - 'notebooks/**'  # Monitor pull requests that affect notebooks
+    branches:
+      - main
 
 jobs:
-  run-tests:
+  run-notebooks:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
+          python-version: '3.8'  # Adjust the Python version as needed
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt  # Adjust this if you have a different way to manage dependencies
+          pip install pytest databricks-cli
 
-      - name: Run tests
+      - name: Run unit tests
         run: |
-          # Command to run your unit tests
-          # Adjust this to the command you use to run your tests, for example:
-          pytest tests/  # Assuming your tests are in a 'tests' folder
+          pytest tests/  # Adjust the path to your test files
+
+      - name: Configure Databricks CLI
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          databricks configure --token <<EOF
+          $DATABRICKS_HOST
+          $DATABRICKS_TOKEN
+          EOF
+
+      - name: Upload notebooks to Databricks
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          # Replace `your_notebook_path` with the path to your notebook(s)
+          for notebook in notebooks/*.ipynb; do
+            databricks workspace import --overwrite --format JUPYTER $notebook /Workspace/Tests/$(basename $notebook)
+          done
+
+      - name: Run notebooks on Databricks
+        run: |
+          # Assuming you want to run the last uploaded notebook
+          notebook_path=$(basename notebooks/*.ipynb)
+          response=$(databricks jobs.create --json "{\"name\":\"Test Notebook\",\"notebook_task\":{\"notebook_path\":\"/Workspace/Tests/$notebook_path\"}}")
+          job_id=$(echo $response | jq -r .job_id)
+          databricks jobs.run-now --job-id $job_id
+
