@@ -1,1 +1,6 @@
-git+https://github.com/amazon-science/chronos-forecasting.git
+pytest
+databricks-cli==0.18 
+nbconvert 
+jupyter
+pandas 
+pyspark
