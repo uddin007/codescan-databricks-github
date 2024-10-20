@@ -23,7 +23,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pytest databricks-cli==0.18 nbconvert jupyter 
+          pip install requirements.txt
 
       - name: Run unit tests on notebooks
         run: |
