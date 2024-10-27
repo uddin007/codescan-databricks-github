@@ -1,4 +1,4 @@
-name: 8-code scan and move pipeline 
+name: code scan and move pipeline 
 
 on:
   push:
