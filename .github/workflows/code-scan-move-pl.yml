@@ -110,7 +110,7 @@ jobs:
         EOF
     - name: Move notebooks to Databricks Workspace
       run: |
-        for notebook in ./notebooks/*.ipynb; do
-          filename=$(basename "$notebook" .ipynb)
+        for notebook in ./notebooks/*.py; do
+          filename=$(basename "$notebook" .py)
           databricks workspace import --overwrite --format JUPYTER --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
         done
