@@ -15,16 +15,27 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.8'
+    - name: Check for .ipynb files
+      id: check_notebooks
+      run: |
+        if ls notebooks/*.ipynb 1> /dev/null 2>&1; then
+          echo "notebooks_exist=true" >> $GITHUB_ENV
+        else
+          echo "notebooks_exist=false" >> $GITHUB_ENV
+        fi
     - name: Install Jupyter
+      if: env.notebooks_exist == 'true'
       run: |
         pip install jupyter
         pip install nbconvert
     - name: Convert Jupyter Notebooks
+      if: env.notebooks_exist == 'true'
       run: |
         for notebook in notebooks/*.ipynb; do
             jupyter nbconvert --to python "$notebook" 
         done
     - name: Commit and Push Converted Files
+      if: env.notebooks_exist == 'true'
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -32,6 +43,7 @@ jobs:
         git commit -m "Convert notebooks to Python scripts" || echo "No changes to commit"
         git push origin HEAD:main
     - name: Notify success
+      if: env.notebooks_exist == 'true'
       run: |
         echo "Successfully pushed changes!"
 
