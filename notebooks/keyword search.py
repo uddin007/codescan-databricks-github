@@ -20,6 +20,7 @@ import base64
 import requests
 import uuid
 import pandas as pd
+import numpy as np
 
 # COMMAND ----------
 
