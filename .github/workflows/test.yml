@@ -1,30 +1,61 @@
-name: test
+name: Run Databricks Workflow
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-  move-notebooks-databricks:
+  run-databricks-workflow:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
-    - name: Install Databricks CLI
-      run: |
-        pip install databricks-cli==0.18
-    - name: Configure Databricks CLI
-      env:
-        DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-        DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-      run: |
-        databricks configure --token <<EOF
-        $DATABRICKS_HOST
-        $DATABRICKS_TOKEN
-        EOF
-    - name: Run Databricks Workflow
-      run: |
-        databricks jobs run-now --job-id 32558063500619
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Install Databricks CLI
+        run: |
+          pip install databricks-cli
+
+      - name: Configure Databricks CLI
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          databricks configure --token <<EOF
+          $DATABRICKS_HOST
+          $DATABRICKS_TOKEN
+          EOF
+
+      - name: Check and Upload Notebooks
+        run: |
+          for notebook in ./notebooks/*.py; do
+            filename=$(basename "$notebook" .py)
+            existing_file_path="/Workspace/Shared/test-dbx-devops/$filename"
+
+            # Check if the file exists in Databricks
+            if databricks workspace ls "$existing_file_path" > /dev/null 2>&1; then
+              # Get the existing file content from Databricks
+              databricks workspace export "$existing_file_path" --format SOURCE --output existing_file.py
+
+              # Compare the existing file with the local notebook
+              if ! cmp -s "$notebook" existing_file.py; then
+                echo "Uploading $notebook to Databricks as it has changed."
+                databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "$existing_file_path"
+              else
+                echo "$notebook has not changed; skipping upload."
+              fi
+
+              # Clean up
+              rm existing_file.py
+            else
+              echo "$existing_file_path does not exist; uploading as new."
+              databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "$existing_file_path"
+            fi
+          done
