@@ -42,7 +42,7 @@ jobs:
             # Check if the file exists in Databricks
             if databricks workspace ls "$existing_file_path" > /dev/null 2>&1; then
               # Get the existing file content from Databricks
-              databricks workspace export "$existing_file_path" --format SOURCE --output existing_file.py
+              databricks workspace export "$existing_file_path" --format SOURCE > existing_file.py
 
               # Compare the existing file with the local notebook
               if ! cmp -s "$notebook" existing_file.py; then
