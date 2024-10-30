@@ -1,0 +1,30 @@
+name: test
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  move-notebooks-databricks:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+    - name: Install Databricks CLI
+      run: |
+        pip install databricks-cli==0.18
+    - name: Configure Databricks CLI
+      env:
+        DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+        DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      run: |
+        databricks configure --token <<EOF
+        $DATABRICKS_HOST
+        $DATABRICKS_TOKEN
+        EOF
+    - name: Run Databricks Workflow
+      run: |
+        databricks jobs run-now --job-id 32558063500619
