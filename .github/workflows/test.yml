@@ -1,62 +1,22 @@
-name: Run Databricks Workflow
+name: List Changed Python Files
 
 on:
   push:
     branches:
-      - main
-  workflow_dispatch:
+      - main  # Adjust as needed
+  pull_request:
+    branches:
+      - main  # Adjust as needed
 
 jobs:
-  run-databricks-workflow:
+  list-changed-files:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
-
-      - name: Install Databricks CLI
+      - name: List Changed Python Files
         run: |
-          pip install databricks-cli
-
-      - name: Configure Databricks CLI
-        env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-        run: |
-          databricks configure --token <<EOF
-          $DATABRICKS_HOST
-          $DATABRICKS_TOKEN
-          EOF
-
-      - name: Check and Upload Notebooks
-        run: |
-          for notebook in ./notebooks/*.py; do
-            filename=$(basename "$notebook" .py)
-            existing_file_path="/Workspace/Shared/test-dbx-devops/$filename"
-
-            # Check if the file exists in Databricks
-            if databricks workspace ls "$existing_file_path" > /dev/null 2>&1; then
-              # Get the existing file content from Databricks
-              databricks workspace export "$existing_file_path" --format SOURCE > existing_file.py
-
-              # Compare the existing file with the local notebook
-              if ! cmp -s "$notebook" existing_file.py; then
-                echo "Uploading $notebook to Databricks as it has changed."
-                databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "$existing_file_path"
-              else
-                echo "$notebook has not changed; skipping upload."
-              fi
-
-              # Clean up
-              rm existing_file.py
-            else
-              echo "$existing_file_path does not exist; uploading as new."
-              databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "$existing_file_path"
-            fi
-          done
-
+          echo "Changed Python files in the 'notebooks' directory:"
+          git diff --name-only HEAD^ HEAD -- notebooks/*.py || echo "No changes in Python files."
