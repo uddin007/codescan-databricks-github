@@ -15,4 +15,4 @@ jobs:
 
       - name: List modified Python notebooks
         run: |
-          git diff --name-only --diff-filter=ACMRTUXB HEAD^ HEAD notebooks/*.py
+          git diff --name-only --diff-filter=ACMRTUXB $(git merge-base HEAD origin/main) HEAD notebooks/*.py
