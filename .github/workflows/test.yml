@@ -1,19 +1,18 @@
-name: List changed Python files
+name: List Modified Python Notebooks
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  list-changed-files:
+  list-modified-notebooks:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: tj-actions/changed-files@v10
-        id: changed-files
-        with:
-          files: 'notebooks/*.py'
 
-      - name: Print changed Python files
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: List modified Python notebooks
         run: |
-          echo "${{ steps.changed-files.outputs.all_changed_files }}"
+          git diff --name-only --diff-filter=ACMRTUXB HEAD^ HEAD notebooks/*.py
