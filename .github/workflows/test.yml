@@ -19,4 +19,11 @@ jobs:
       - name: List Changed Python Files
         run: |
           echo "Changed Python files in the 'notebooks' directory:"
-          git diff --name-only HEAD^ HEAD -- notebooks/*.py || echo "No changes in Python files."
+
+          # Check if there is a previous commit
+          if git rev-parse --verify HEAD^ &>/dev/null; then
+            git diff --name-only HEAD^ HEAD -- notebooks/*.py || echo "No changes in Python files."
+          else
+            # If there is no previous commit, check for changes in the working directory
+            git diff --name-only -- notebooks/*.py || echo "No changes in Python files."
+          fi
