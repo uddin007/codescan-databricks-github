@@ -92,6 +92,8 @@ jobs:
     needs: codescan # move-notebooks-databricks depends on codescan
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 2
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
@@ -108,16 +110,19 @@ jobs:
         $DATABRICKS_HOST
         $DATABRICKS_TOKEN
         EOF
+    - name: Identify modified Python notebooks
+      run: |
+        MODIFIED_NOTEBOOKS=$(git diff --name-only --diff-filter=ACMRTUXB $(git merge-base HEAD^ HEAD) HEAD notebooks/*.py)
     - name: Move notebooks to Databricks Workspace
       run: |
-        # for notebook in ./notebooks/*.ipynb; do
-        #   filename=$(basename "$notebook" .ipynb)
-        #   databricks workspace import --overwrite --format JUPYTER --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
-        # done
-        for notebook in ./notebooks/*.py; do
+        for notebook in $MODIFIED_NOTEBOOKS; do
           filename=$(basename "$notebook" .py)
           databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
         done
+        # for notebook in ./notebooks/*.py; do
+        #   filename=$(basename "$notebook" .py)
+        #   databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
+        # done
     - name: Run Databricks Workflow
       run: |
         databricks jobs run-now --job-id 32558063500619
