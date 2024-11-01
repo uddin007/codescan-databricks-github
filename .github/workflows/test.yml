@@ -15,4 +15,9 @@ jobs:
 
       - name: List modified Python notebooks
         run: |
-          git diff --name-only --diff-filter=ACMRTUXB $(git merge-base HEAD^ HEAD) HEAD notebooks/*.py
+          MODIFIED_NOTEBOOKS=$(git diff --name-only --diff-filter=ACMRTUXB $(git merge-base HEAD^ HEAD) HEAD notebooks/*.py)
+      - name: Upload modified notebooks
+        run: |
+          for notebook in $MODIFIED_NOTEBOOKS; do
+            echo notebook
+          done
