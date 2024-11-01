@@ -19,5 +19,5 @@ jobs:
       - name: Upload modified notebooks
         run: |
           for notebook in $MODIFIED_NOTEBOOKS; do
-            echo notebook
+            echo $notebook
           done
