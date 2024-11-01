@@ -1,9 +1,7 @@
-name: List Modified Python Notebooks
+name: List Modified Python Notebooks in Main Branch
 
 on:
   push:
-    branches: [main]
-  pull_request:
     branches: [main]
 
 jobs:
@@ -12,7 +10,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2 # Fetch the last two commits on the main branch
 
       - name: List modified Python notebooks
         run: |
-          git diff --name-only --diff-filter=ACMRTUXB $(git merge-base HEAD origin/main) HEAD notebooks/*.py
+          git diff --name-only --diff-filter=ACMRTUXB $(git merge-base HEAD^ HEAD) HEAD notebooks/*.py
