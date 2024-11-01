@@ -1,29 +1,19 @@
-name: List Changed Python Files
+name: List changed Python files
 
 on:
   push:
-    branches:
-      - main  # Adjust as needed
-  pull_request:
-    branches:
-      - main  # Adjust as needed
+    branches: [ main ]
 
 jobs:
   list-changed-files:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+      - uses: tj-actions/changed-files@v10
+        id: changed-files
+        with:
+          files: 'notebooks/*.py'
 
-      - name: List Changed Python Files
+      - name: Print changed Python files
         run: |
-          echo "Changed Python files in the 'notebooks' directory:"
-
-          # Check if there is a previous commit
-          if git rev-parse --verify HEAD^ &>/dev/null; then
-            git diff --name-only HEAD^ HEAD -- notebooks/*.py || echo "No changes in Python files."
-          else
-            # If there is no previous commit, check for changes in the working directory
-            git diff --name-only -- notebooks/*.py || echo "No changes in Python files."
-          fi
+          echo "${{ steps.changed-files.outputs.all_changed_files }}"
