@@ -90,6 +90,7 @@ jobs:
   move-notebooks-databricks:
     runs-on: ubuntu-latest
     # needs: codescan # move-notebooks-databricks depends on codescan
+    needs: convert
     steps:
     - uses: actions/checkout@v2
       with:
