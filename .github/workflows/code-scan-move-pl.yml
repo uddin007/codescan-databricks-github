@@ -123,6 +123,7 @@ jobs:
           stripped_string=${string#*notebooks/}
           echo "$stripped_string" 
           filename=$(basename "$stripped_string" .py)
+          echo "$filename" 
           databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
         done
         # for notebook in ./notebooks/*.py; do
