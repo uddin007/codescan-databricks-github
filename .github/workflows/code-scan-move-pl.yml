@@ -118,19 +118,11 @@ jobs:
         echo "MODIFIED_NOTEBOOKS=$MODIFIED_NOTEBOOKS" >> $GITHUB_ENV
     - name: Move notebooks to Databricks Workspace
       run: |
-        IFS=$'\n' read -r -d '' -a notebooks_array <<< "$MODIFIED_NOTEBOOKS"$'\0'
-        for notebook in "${notebooks_array[@]}"; do
+        for notebook in $MODIFIED_NOTEBOOKS; do
           filename=$(basename "$notebook" .py)
           echo "Importing notebook: $filename"
           databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
         done
-    # - name: Move notebooks to Databricks Workspace
-    #   run: |
-    #     for notebook in $MODIFIED_NOTEBOOKS; do
-    #       filename=$(basename "$notebook" .py)
-    #       echo "Importing notebook: $filename"
-    #       databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
-    #     done
         # for notebook in ./notebooks/*.py; do
         #   filename=$(basename "$notebook" .py)
         #   databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
