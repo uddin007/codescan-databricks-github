@@ -116,13 +116,17 @@ jobs:
         MODIFIED_NOTEBOOKS=$(git diff --name-only --diff-filter=ACMRTUXB $(git merge-base HEAD^ HEAD) HEAD notebooks/*.py)
         echo "modified notebooks: $MODIFIED_NOTEBOOKS"
         echo "MODIFIED_NOTEBOOKS=$MODIFIED_NOTEBOOKS" >> $GITHUB_ENV
-    - name: Move notebooks to Databricks Workspace
+    - name: Identify and Move notebooks to Databricks Workspace
       run: |
-        for notebook in $(echo "$MODIFIED_NOTEBOOKS" | tr ' ' '\n'); do
-          filename=$(basename "$notebook" .py)
-          echo "Importing notebook: $filename"
-          databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
-        done
+        if [ -n "$MODIFIED_NOTEBOOKS" ]; then
+          for notebook in $(echo "$MODIFIED_NOTEBOOKS" | tr ' ' '\n'); do
+            filename=$(basename "$notebook" .py)
+            echo "Importing notebook: $filename"
+            databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
+          done
+        else
+          echo "No notebooks were modified."
+        fi
     # - name: Move notebooks to Databricks Workspace
     #   run: |
     #     for notebook in $MODIFIED_NOTEBOOKS; do
