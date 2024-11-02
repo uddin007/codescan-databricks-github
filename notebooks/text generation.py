@@ -1,5 +1,5 @@
 # Databricks notebook source
-print('hello new world')
+print('hello world')
 
 # COMMAND ----------
 
