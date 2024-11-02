@@ -120,7 +120,7 @@ jobs:
       run: |
         for string in $MODIFIED_NOTEBOOKS; do
           echo "modified notebooks: $string"
-          stripped_string="${string#*/}"
+          stripped_string=$(echo "$string" | cut -d '/' -f 2-)
           echo "$stripped_string" 
         done
         for notebook in ./notebooks/*.py; do
