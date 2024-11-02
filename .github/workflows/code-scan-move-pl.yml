@@ -126,12 +126,18 @@ jobs:
         #   echo "$filename" 
         #   databricks workspace import --overwrite --format SOURCE --language PYTHON "$stripped_string" "/Workspace/Shared/test-dbx-devops/$filename"
         # done
-        for notebook in ./notebooks/*.py; do
+        for notebook in $MODIFIED_NOTEBOOKS; do
           echo "$notebook" 
           filename=$(basename "$notebook" .py) 
           echo "$filename" 
-          # databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
+          databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
         done
+        # for notebook in ./notebooks/*.py; do
+        #   echo "$notebook" 
+        #   filename=$(basename "$notebook" .py) 
+        #   echo "$filename" 
+        #   databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
+        # done
     # - name: Run Databricks Workflow
     #   run: |
     #     databricks jobs run-now --job-id 32558063500619
