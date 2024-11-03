@@ -47,50 +47,49 @@ jobs:
       run: |
         echo "Successfully pushed changes!"
 
-  # codescan:
-  #   runs-on: ubuntu-latest
-  #   needs: convert # codescan depends on convert
-  #   permissions:
-  #     # required for all workflows
-  #     security-events: write
-  #     # required to fetch internal or private CodeQL packs
-  #     packages: read
-  #     # only required for workflows in private repositories
-  #     actions: read
-  #     contents: read
-  #   steps:
-  #   - name: Checkout repository
-  #     uses: actions/checkout@v4
-  #   - name: Set up Python
-  #     uses: actions/setup-python@v2
-  #     with:
-  #       python-version: '3.8'  # Specify your Python version
-  #   - name: Initialize CodeQL
-  #     uses: github/codeql-action/init@v3
-  #     with:
-  #       languages: ${{ matrix.language }}
-  #       build-mode: ${{ matrix.build-mode }}
-  #   - if: matrix.build-mode == 'manual'
-  #     shell: bash
-  #     run: |
-  #       echo 'If you are using a "manual" build mode for one or more of the' \
-  #         'languages you are analyzing, replace this with the commands to build' \
-  #         'your code, for example:'
-  #       echo '  make bootstrap'
-  #       echo '  make release'
-  #       exit 1
-  #   - name: Wait for 30 seconds
-  #     run: sleep 30
-  #   - name: Perform CodeQL Analysis
-  #     uses: github/codeql-action/analyze@v3
-  #     with:
-  #       checkout_path: notebooks # Specify the folder to analyze
-  #       category: "/language:${{matrix.language}}"
+  codescan:
+    runs-on: ubuntu-latest
+    needs: convert # codescan depends on convert
+    permissions:
+      # required for all workflows
+      security-events: write
+      # required to fetch internal or private CodeQL packs
+      packages: read
+      # only required for workflows in private repositories
+      actions: read
+      contents: read
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'  # Specify your Python version
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        build-mode: ${{ matrix.build-mode }}
+    - if: matrix.build-mode == 'manual'
+      shell: bash
+      run: |
+        echo 'If you are using a "manual" build mode for one or more of the' \
+          'languages you are analyzing, replace this with the commands to build' \
+          'your code, for example:'
+        echo '  make bootstrap'
+        echo '  make release'
+        exit 1
+    - name: Wait for 30 seconds
+      run: sleep 30
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        checkout_path: notebooks # Specify the folder to analyze
+        category: "/language:${{matrix.language}}"
 
   move-notebooks-databricks:
     runs-on: ubuntu-latest
-    # needs: codescan # move-notebooks-databricks depends on codescan
-    needs: convert
+    needs: codescan # move-notebooks-databricks depends on codescan
     steps:
     - uses: actions/checkout@v2
       with:
@@ -128,8 +127,8 @@ jobs:
           echo "$filename" 
           databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
         done
-    # - name: Run Databricks Workflow
-    #   if: ${{ env.MODIFIED_NOTEBOOKS != '' }}
-    #   run: |
-    #     echo "modified notebooks: $MODIFIED_NOTEBOOKS"
-    #     databricks jobs run-now --job-id 32558063500619
+    - name: Run Databricks Workflow
+      if: ${{ env.MODIFIED_NOTEBOOKS != '' }}
+      run: |
+        echo "modified notebooks: $MODIFIED_NOTEBOOKS"
+        databricks jobs run-now --job-id 32558063500619
