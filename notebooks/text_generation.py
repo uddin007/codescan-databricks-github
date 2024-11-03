@@ -19,4 +19,4 @@ chain = (
   | chat_model
   | StrOutputParser()
 )
-print(chain.invoke({"question": "What are Data protection by design and by default under GDPR?"}))
+print(chain.invoke({"question": "What is Data protection by design and by default under GDPR?"}))
