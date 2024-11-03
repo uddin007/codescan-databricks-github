@@ -124,6 +124,7 @@ jobs:
           databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
         done
     - name: Run Databricks Workflow
+      if: ${{ env.MODIFIED_NOTEBOOKS != '' }}
       run: |
         echo "modified notebooks: $MODIFIED_NOTEBOOKS"
         databricks jobs run-now --job-id 32558063500619
