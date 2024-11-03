@@ -125,4 +125,5 @@ jobs:
         done
     - name: Run Databricks Workflow
       run: |
+        echo "modified notebooks: $MODIFIED_NOTEBOOKS"
         databricks jobs run-now --job-id 32558063500619
