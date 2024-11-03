@@ -118,26 +118,12 @@ jobs:
         echo "MODIFIED_NOTEBOOKS=$MODIFIED_NOTEBOOKS" >> $GITHUB_ENV
     - name: Move notebooks to Databricks Workspace
       run: |
-        # for string in $MODIFIED_NOTEBOOKS; do
-        #   echo "modified notebooks: $string"
-        #   stripped_string=${string#*notebooks/}
-        #   echo "$stripped_string" 
-        #   filename=$(basename "$stripped_string" .py)
-        #   echo "$filename" 
-        #   databricks workspace import --overwrite --format SOURCE --language PYTHON "$stripped_string" "/Workspace/Shared/test-dbx-devops/$filename"
-        # done
         for notebook in $MODIFIED_NOTEBOOKS; do
           echo "$notebook" 
           filename=$(basename "$notebook" .py) 
           echo "$filename" 
           databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
         done
-        # for notebook in ./notebooks/*.py; do
-        #   echo "$notebook" 
-        #   filename=$(basename "$notebook" .py) 
-        #   echo "$filename" 
-        #   databricks workspace import --overwrite --format SOURCE --language PYTHON "$notebook" "/Workspace/Shared/test-dbx-devops/$filename"
-        # done
     - name: Run Databricks Workflow
       run: |
         databricks jobs run-now --job-id 32558063500619
